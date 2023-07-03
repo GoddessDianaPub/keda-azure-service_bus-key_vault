@@ -1,0 +1,100 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: fog-api
+---
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: servicebus-secret
+#type: Opaque
+#data:
+  # This is azure service bus namespace connection string
+#  connection: RW5kcG9pbnQ9c2I6Ly9rZWRhLXNlcnZpY2VidXMtbmFtZXNwYWNlLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Um9vdE1hbmFnZVNoYXJlZEFjY2Vzc0tleTtTaGFyZWRBY2Nlc3NLZXk9bGQ4akIyV042SWRlbzJkMWJobXpYR01SZWRIOXg5ZloremFxSGtmVUQrcz0=
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fog-api
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: fog-api
+        image: nginx:alpine
+        env:
+        - name: KEDA_SERVICEBUS_AUTH_MODE
+          value: ConnectionString
+        - name: KEDA_SERVICEBUS_TOPIC_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+             name: keda-servicebus
+             key: servicebus-connectionstring
+        - name: KEDA_SERVICEBUS_TOPIC_NAME
+          value: fog_device
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keda-servicebus
+data:  
+  servicebus-connectionstring: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9a2VkYS1vcGVyYXRvcjtTaGFyZWRBY2Nlc3NLZXk9ODR1bVMzR3ZXS3cxZDNDTWRhNWVZVndhMTZJOCtVcFMrK0FTYkJhbUhXcz07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
+#  connection: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNl
+#  connection: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: azure-servicebus-auth
+spec:
+  secretTargetRef:
+    - key: servicebus-connectionstring # key in secret
+      name: keda-servicebus # name of secret
+      parameter: connection 
+      
+#  podIdentity:
+#    provider: azure | azure-workload
+      
+---    
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: fog-api-azure-servicebus
+spec:
+  scaleTargetRef:
+    name: fog-api
+  pollingInterval: 30
+  cooldownPeriod: 60
+  minReplicaCount: 1
+  maxReplicaCount: 4
+
+  triggers:
+  - type: azure-servicebus
+    metadata:
+      topicName: fog_device
+      subscriptionName: fog
+#      namespace: evgeniy-dev-servicebus #service-bus-namespace: Optional, required when pod identity is used
+      messageCount: "5"
+      activationMessageCount: "2"
+    authenticationRef:
+      name: azure-servicebus-auth
+#    connectionFromEnv:
+#      name: azure-servicebus-auth
