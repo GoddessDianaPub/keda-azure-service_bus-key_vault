@@ -44,7 +44,9 @@ metadata:
 data:  
   servicebus-connectionstring: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9a2VkYS1vcGVyYXRvcjtTaGFyZWRBY2Nlc3NLZXk9ODR1bVMzR3ZXS3cxZDNDTWRhNWVZVndhMTZJOCtVcFMrK0FTYkJhbUhXcz07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
 
+
 ---
+
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -57,8 +59,10 @@ spec:
       
 #  podIdentity:
 #    provider: azure | azure-workload
+
       
----    
+---
+
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -82,5 +86,3 @@ spec:
       activationMessageCount: "2"
     authenticationRef:
       name: azure-servicebus-auth
-#    connectionFromEnv:
-#      name: azure-servicebus-auth
