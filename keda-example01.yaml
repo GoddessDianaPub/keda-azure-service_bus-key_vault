@@ -1,16 +1,14 @@
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: fog-api
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fog-api-sa
+  labels:
+    azure.workload.identity/use: "true"
+  annotations:
+    azure.workload.identity/client-id: 
+
+
 ---
-#apiVersion: v1
-#kind: Secret
-#metadata:
-#  name: servicebus-secret
-#type: Opaque
-#data:
-  # This is azure service bus namespace connection string
-#  connection: RW5kcG9pbnQ9c2I6Ly9rZWRhLXNlcnZpY2VidXMtbmFtZXNwYWNlLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Um9vdE1hbmFnZVNoYXJlZEFjY2Vzc0tleTtTaGFyZWRBY2Nlc3NLZXk9bGQ4akIyV042SWRlbzJkMWJobXpYR01SZWRIOXg5ZloremFxSGtmVUQrcz0=
 
 apiVersion: apps/v1
 kind: Deployment
@@ -28,6 +26,7 @@ spec:
       annotations:
         app: keda-operator
     spec:
+      serviceAccountName: fog-api-sa
       containers:
       - name: fog-api
         image: nginx:alpine
