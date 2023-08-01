@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -9,7 +10,6 @@ metadata:
 
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,7 +38,6 @@ spec:
         - containerPort: 8080
 
 ---
-
 apiVersion: v1
 kind: Secret
 metadata:
@@ -48,9 +47,7 @@ metadata:
   annotations:
     app: keda-operator
 data:
-  connection: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
-#  connection: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNl
-#  connection: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
+  servicebus-connectionstring: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9Zm9nX2RldmljZTtTaGFyZWRBY2Nlc3NLZXk9L3BXOW9ER25HemdUczEzZFJCTFkyK3BUQ25VV2JrR2VZK0FTYkwwamhNVT07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
 
 ---
 apiVersion: keda.sh/v1alpha1
@@ -63,12 +60,9 @@ metadata:
     app: keda-operator
 spec:
   secretTargetRef:
-    - key: SharedAccessKey
-      name: keda-servicebus # name of secret
-      parameter: connection # key in secret
-      
-#  podIdentity:
-#    provider: azure | azure-workload
+    - key: servicebus-connectionstring  # key in secret
+      name: keda-servicebus             # name of secret
+      parameter: connection 
       
 ---    
 apiVersion: keda.sh/v1alpha1
@@ -90,14 +84,10 @@ spec:
 
   triggers:
   - type: azure-servicebus
-#    cloud: Private
     metadata:
       topicName: fog_device
       subscriptionName: fog
-#      namespace: evgeniy-dev-servicebus #service-bus-namespace: Optional, required when pod identity is used
       messageCount: "5"
       activationMessageCount: "2"
     authenticationRef:
       name: azure-servicebus-auth
-#    connectionFromEnv:
-#      name: azure-servicebus-auth
