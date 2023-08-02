@@ -1,14 +1,13 @@
 # Install keda: https://keda.sh/docs/2.11/deploy/
 
-helm repo add kedacore https://kedacore.github.io/charts
-helm repo update
-helm install keda kedacore/keda --namespace keda --create-namespace
+- helm repo add kedacore https://kedacore.github.io/charts
+- helm repo update
+- helm install keda kedacore/keda --namespace keda --create-namespace
 
 kubectl apply -f filename --namespace namespace
 
 # Sending messages to service bus in order to check the HPA is working:
 https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet-how-to-use-topics-subscriptions?tabs=connection-string#add-code-to-send-messages-to-the-topic
-
 
 
 
@@ -23,14 +22,14 @@ az aks update -g myResourceGroup -n myAKSCluster --enable-oidc-issuer
 az aks update -g myResourceGroup -n myAKSCluster --enable-workload-identity
 
 # Check AKS Cluster's Identity Configuration
-az aks show --resource-group myResourceGroup --name myAKSCluster --query identity
-az aks show --resource-group myResourceGroup --name myAKSCluster --query identity.type
-az aks show -n myAKScluster -g myResourceGroup --query identityProfile.kubeletidentity.clientId -otsv
+- az aks show --resource-group myResourceGroup --name myAKSCluster --query identity
+- az aks show --resource-group myResourceGroup --name myAKSCluster --query identity.type
+- az aks show -n myAKScluster -g myResourceGroup --query identityProfile.kubeletidentity.clientId -otsv
 
 
 # Uninstall keda - you should delete the scaledobjects created in all of your namespaces before uninstalling keda
-kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
-helm uninstall keda -n keda
+- kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
+- helm uninstall keda -n keda
 
 kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
 
