@@ -31,20 +31,20 @@ az aks update -g myResourceGroup -n myAKSCluster --enable-workload-identity
 - kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
 - helm uninstall keda -n keda
 
-kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
+- kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}')
 
 
 # In case of keda namespace is in terminating state, you can follow these steps:
 
 1. kubectl get namespace keda -o json >tmp.json
 2. Remove "kubernetes from the finalizers section in tmp.json:
-Before:
+- Before:
     "spec": {
         "finalizers": [
             "kubernetes"
         ]
 
-After:
+- After:
     "spec": {
         "finalizers": []
 
