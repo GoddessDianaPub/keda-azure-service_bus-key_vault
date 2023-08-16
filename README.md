@@ -10,6 +10,12 @@ kubectl apply -f filename --namespace namespace
 https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet-how-to-use-topics-subscriptions?tabs=connection-string#add-code-to-send-messages-to-the-topic
 
 
+# Creating secrets with azure key vault:
+# https://shailender-choudhary.medium.com/access-secrets-from-azure-key-vault-in-azure-kubernetes-service-e8efffe49427
+- kubectl get pods -n kube-system -l "app in (secrets-store-csi-driver,secrets-store-provider-azure)"
+- az aks enable-addons --addons azure-keyvault-secrets-provider --name aksdemocluster --resource-group aksdemocluster-rg
+- 
+
 
 # Workload identity
 # Show the OIDC Issuer URL
