@@ -19,15 +19,21 @@ spec:
       - name: fog-api
         image: nginx:alpine
         env:
-        - name: KEDA_SERVICEBUS_AUTH_MODE
-          value: ConnectionString
-        - name: KEDA_SERVICEBUS_TOPIC_CONNECTIONSTRING
+        - name: AZURE_CLIENT_ID
           valueFrom:
             secretKeyRef:
-             name: keda-servicebus
-             key: servicebus-connectionstring
-        - name: KEDA_SERVICEBUS_TOPIC_NAME
-          value: fog_device
+              name: keyvault-auth
+              key: azureKeyVault.credentials.clientId  # Refers to TriggerAuthentication
+        - name: AZURE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-auth
+              key: azureKeyVault.credentials.clientSecret  # Refers to TriggerAuthentication
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: keyvault-auth
+              key: azureKeyVault.credentials.tenantId  # Refers to TriggerAuthentication
         resources:
           limits:
             memory: "128Mi"
@@ -53,6 +59,14 @@ metadata:
 spec:
   azureKeyVault:
     vaultUri: https://evgeniy-kv.vault.azure.net/
+    credentials:
+      clientId: 31b142d0-68f3-46e0-8841-a51b8dcabc0e
+      clientSecret:
+        valueFrom:
+          secretKeyRef:
+            name: {k8s-secret-with-azure-ad-secret}
+            key: {key-within-the-secret}                                  
+      tenantId: 8a94ab74-f3c6-4d02-89c7-ed0f47d6c544
     secrets:
     - parameter: Secrets
       name: fog-api-service-bus

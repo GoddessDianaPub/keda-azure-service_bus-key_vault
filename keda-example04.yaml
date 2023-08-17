@@ -18,16 +18,9 @@ spec:
       containers:
       - name: fog-api
         image: nginx:alpine
-        env:
-        - name: KEDA_SERVICEBUS_AUTH_MODE
-          value: ConnectionString
-        - name: KEDA_SERVICEBUS_TOPIC_CONNECTIONSTRING
-          valueFrom:
-            secretKeyRef:
-             name: keda-servicebus
-             key: servicebus-connectionstring
-#        - name: KEDA_SERVICEBUS_TOPIC_NAME
-#          value: fog_device
+        envFrom:
+        - secretRef:
+            name: keda-servicebus
         resources:
           limits:
             memory: "128Mi"
