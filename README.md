@@ -11,11 +11,8 @@ https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet
 
 
 # Creating secrets with azure key vault:
-# https://shailender-choudhary.medium.com/access-secrets-from-azure-key-vault-in-azure-kubernetes-service-e8efffe49427
-- kubectl get pods -n kube-system -l "app in (secrets-store-csi-driver,secrets-store-provider-azure)"
-- az aks enable-addons --addons azure-keyvault-secrets-provider --name aksdemocluster --resource-group aksdemocluster-rg
-- 
-
+- https://keda.sh/docs/2.10/concepts/authentication/#azure-key-vault-secrets
+- Register an app with AAD App registrations (you will use it with TriggerAuthentication)
 
 # Workload identity
 # Show the OIDC Issuer URL

@@ -18,22 +18,9 @@ spec:
       containers:
       - name: fog-api
         image: nginx:alpine
-        env:
-        - name: AZURE_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: keyvault-auth
-              key: azureKeyVault.credentials.clientId  # Refers to TriggerAuthentication
-        - name: AZURE_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: keyvault-auth
-              key: azureKeyVault.credentials.clientSecret  # Refers to TriggerAuthentication
-        - name: AZURE_TENANT_ID
-          valueFrom:
-            secretKeyRef:
-              name: keyvault-auth
-              key: azureKeyVault.credentials.tenantId  # Refers to TriggerAuthentication
+        envFrom:
+        - secretRef:
+            name: keda-servicebus-clientid
         resources:
           limits:
             memory: "128Mi"
@@ -42,16 +29,14 @@ spec:
         - containerPort: 80
 
 ---
-#apiVersion: v1
-#kind: Secret
-#metadata:
-#  name: keda-servicebus
-#data:  
-#  servicebus-connectionstring: RW5kcG9pbnQ9c2I6Ly9ldmdlbml5LWRldi1zZXJ2aWNlYnVzLnNlcnZpY2VidXMud2luZG93cy5uZXQvO1NoYXJlZEFjY2Vzc0tleU5hbWU9a2VkYS1vcGVyYXRvcjtTaGFyZWRBY2Nlc3NLZXk9ODR1bVMzR3ZXS3cxZDNDTWRhNWVZVndhMTZJOCtVcFMrK0FTYkJhbUhXcz07RW50aXR5UGF0aD1mb2dfZGV2aWNlCg==
-
-
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keda-servicebus-clientid
+data:  
+  clientid: "cVV0OFF+ZWNTbkk2MXcxdUM4SDQ2cGk1Tm5VZ2ZHeFUwOC5SbmFsLgo="
+ 
 ---
-
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -60,17 +45,17 @@ spec:
   azureKeyVault:
     vaultUri: https://evgeniy-kv.vault.azure.net/
     credentials:
-      clientId: 31b142d0-68f3-46e0-8841-a51b8dcabc0e
+      clientId: 87f8fe68-be40-430d-9d42-4e6ae448bb4f
       clientSecret:
         valueFrom:
           secretKeyRef:
-            name: {k8s-secret-with-azure-ad-secret}
-            key: {key-within-the-secret}                                  
+            name: keda-servicebus-clientid
+            key: clientid                                 
       tenantId: 8a94ab74-f3c6-4d02-89c7-ed0f47d6c544
     secrets:
-    - parameter: Secrets
+    - parameter: connection
       name: fog-api-service-bus
-      version: 552494bc0980478cb4b45530f950bc73
+      version: 2d04414396674baba71fbec21a1010f9
      
 ---
 apiVersion: keda.sh/v1alpha1
@@ -89,7 +74,6 @@ spec:
   triggers:
   - type: azure-servicebus
     metadata:
-      connectionFromEnv: "true"
       topicName: fog_device
       subscriptionName: fog
       messageCount: "5"
