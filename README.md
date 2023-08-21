@@ -13,6 +13,7 @@ https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet
 # Creating secrets with azure key vault:
 - https://keda.sh/docs/2.10/concepts/authentication/#azure-key-vault-secrets
 - Register an app with AAD App registrations (you will use it with TriggerAuthentication)
+- I used "Keda-KeyVault-Access" registered application which will expire on 8/16/2025
 
 # Workload identity
 # Show the OIDC Issuer URL
