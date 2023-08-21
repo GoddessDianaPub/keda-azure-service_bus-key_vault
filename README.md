@@ -14,6 +14,8 @@ https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet
 - https://keda.sh/docs/2.10/concepts/authentication/#azure-key-vault-secrets
 - Register an app with AAD App registrations (you will use it with TriggerAuthentication)
 - I used "Keda-KeyVault-Access" registered application which will expire on 8/16/2025
+- Create an access policy for the registered app with: "Get, List, Recover" secret permissions
+- Service Bus Shared Access Policy needs to be of type Manage: https://keda.sh/docs/2.11/scalers/azure-service-bus/
 
 # Workload identity
 # Show the OIDC Issuer URL
