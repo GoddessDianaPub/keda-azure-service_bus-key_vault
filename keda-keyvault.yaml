@@ -54,7 +54,7 @@ spec:
       tenantId: 8a94ab74-f3c6-4d02-89c7-ed0f47d6c544
     secrets:
     - parameter: connection
-      name: fog-api-service-bus #secret name as it is in azure key vault
+      name: fog-api-service-bus #secret name as configured in azure key vault
       version: 2d04414396674baba71fbec21a1010f9 #version to use within secret name in azure key vault
      
 ---
