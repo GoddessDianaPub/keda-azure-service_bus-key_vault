@@ -10,8 +10,7 @@ kubectl apply -f filename --namespace namespace
 https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet-how-to-use-topics-subscriptions?tabs=connection-string#add-code-to-send-messages-to-the-topic
 
 
-# Creating secrets with azure key vault:
-- https://keda.sh/docs/2.10/concepts/authentication/#azure-key-vault-secrets
+# Creating secrets with azure key vault: https://keda.sh/docs/2.10/concepts/authentication/#azure-key-vault-secrets
 - Register an app with AAD App registrations (you will use it with TriggerAuthentication)
 - I used "Keda-KeyVault-Access" registered application which will expire on 8/16/2025
 - Create an access policy for the registered app with: "Get, List, Recover" secret permissions
