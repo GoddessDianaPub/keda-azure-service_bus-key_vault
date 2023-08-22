@@ -2,7 +2,7 @@
 It creates HPA to scale pods up and down according your configurations (you might need to delete your existing HPA)
 
 # Make your changes to the yaml file, and run this command in order to create the resources:
-kubectl apply -f <filename> --namespace <namespace>
+kubectl apply -f < filename > --namespace < namespace >
 
 - You can create resources and use the secret with [azure service bus connection string](https://keda.sh/docs/2.10/concepts/authentication/#defining-secrets-and-config-maps-on-scaledobject)
 - More secure way is to create secret with azure key vault
