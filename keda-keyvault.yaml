@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        envFrom:
+        - secretRef:
+            name: aad-app-clientid #name of secret
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aad-app-clientid
+data:  
+  clientid: #AAD clientId secret in base64 mode
+ 
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keyvault-keda
+spec:
+  azureKeyVault:
+    vaultUri: #key-vault-address
+    credentials:
+      clientId: #azure-ad-client-id
+      clientSecret:
+        valueFrom:
+          secretKeyRef:
+            name: aad-app-clientid #name of secret
+            key: clientid #key in secret                                 
+      tenantId: #azure-ad-tenant-id
+    secrets:
+    - parameter: connection
+      name: #key-vault-secret-name
+      version: #key-vault-secret-version
+     
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: keda-azure-servicebus
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: nginx
+  pollingInterval: 30
+  cooldownPeriod: 60
+  minReplicaCount: 1
+  maxReplicaCount: 4
+
+  triggers:
+  - type: azure-servicebus
+    metadata:
+      topicName: nginx
+      subscriptionName: nginx
+      messageCount: "5"
+      activationMessageCount: "2"
+    authenticationRef:
+      name: keyvault-keda #name of TriggerAuthentication
+
