@@ -81,3 +81,11 @@ spec:
     authenticationRef:
       name: keyvault-auth
 
+  - type: azure-servicebus
+    metadata:
+      topicName: fog_device
+      subscriptionName: home-service
+      messageCount: "5"
+      activationMessageCount: "2"
+    authenticationRef:
+      name: keyvault-auth
