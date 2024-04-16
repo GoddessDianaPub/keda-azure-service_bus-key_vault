@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: fog-api
   labels:
     app: nginx
 spec:
@@ -16,11 +16,11 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
+      - name: fog-api
         image: nginx:alpine
         envFrom:
         - secretRef:
-            name: aad-app-clientid #name of secret
+            name: keda-servicebus-clientid
         resources:
           limits:
             memory: "128Mi"
@@ -32,40 +32,40 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: aad-app-clientid
+  name: keda-servicebus-clientid
 data:  
-  clientid: #AAD clientId secret in base64 mode
+  clientid: cVV0OFF+ZWNTbkk2MXcxdUM4SDQ2cGk1Tm5VZ2ZHeFUwOC5SbmFsLgo= #AAD clientId secret in base64 mode
  
 ---
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
-  name: keyvault-keda
+  name: keyvault-auth
 spec:
   azureKeyVault:
-    vaultUri: #key-vault-address
+    vaultUri: https://evgeniy-kv.vault.azure.net/
     credentials:
-      clientId: #azure-ad-client-id
+      clientId: 87f8fe68-be40-430d-9d42-4e6ae448bb4f
       clientSecret:
         valueFrom:
           secretKeyRef:
-            name: aad-app-clientid #name of secret
-            key: clientid #key in secret                                 
-      tenantId: #azure-ad-tenant-id
+            name: keda-servicebus-clientid
+            key: clientid                                 
+      tenantId: 8a94ab74-f3c6-4d02-89c7-ed0f47d6c544
     secrets:
     - parameter: connection
-      name: #key-vault-secret-name
-      version: #key-vault-secret-version
+      name: fog-api-service-bus #secret name as configured in azure key vault
+      version: 2d04414396674baba71fbec21a1010f9 #version to use within secret name in azure key vault
      
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: keda-azure-servicebus
+  name: fog-api-azure-servicebus
 spec:
   scaleTargetRef:
     kind: Deployment
-    name: nginx
+    name: fog-api
   pollingInterval: 30
   cooldownPeriod: 60
   minReplicaCount: 1
@@ -74,10 +74,18 @@ spec:
   triggers:
   - type: azure-servicebus
     metadata:
-      topicName: nginx
-      subscriptionName: nginx
+      topicName: fog_device
+      subscriptionName: fog
       messageCount: "5"
       activationMessageCount: "2"
     authenticationRef:
-      name: keyvault-keda #name of TriggerAuthentication
+      name: keyvault-auth
 
+  - type: azure-servicebus
+    metadata:
+      topicName: fog_device
+      subscriptionName: home-service
+      messageCount: "5"
+      activationMessageCount: "2"
+    authenticationRef:
+      name: keyvault-auth
