@@ -1,3 +1,6 @@
+## This repo is to trigger azure service bus when sending messages to topics
+It creates HPA to scale pods up and down according your configurations (you might need to delete your existing HPA)
+
 # Install keda: https://keda.sh/docs/2.11/deploy/
 
 - helm repo add kedacore https://kedacore.github.io/charts
@@ -5,6 +8,9 @@
 - helm install keda kedacore/keda --namespace keda --create-namespace
 
 kubectl apply -f filename --namespace namespace
+
+- You can create resources and use the secret with [azure service bus connection string](https://keda.sh/docs/2.10/concepts/authentication/#defining-secrets-and-config-maps-on-scaledobject)
+- More secure way is to create secret with azure key vault
 
 # Sending messages to service bus in order to check the HPA is working:
 https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dotnet-how-to-use-topics-subscriptions?tabs=connection-string#add-code-to-send-messages-to-the-topic
