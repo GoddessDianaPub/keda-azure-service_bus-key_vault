@@ -34,7 +34,7 @@ kind: Secret
 metadata:
   name: keda-servicebus-clientid
 data:  
-  clientid: cVV0OFF+ZWNTbkk2MXcxdUM4SDQ2cGk1Tm5VZ2ZHeFUwOC5SbmFsLgo= #AAD clientId secret in base64 mode
+  clientid: cVV0OFFLgo= #AAD clientId secret in base64 mode
  
 ---
 apiVersion: keda.sh/v1alpha1
@@ -45,17 +45,17 @@ spec:
   azureKeyVault:
     vaultUri: https://evgeniy-kv.vault.azure.net/
     credentials:
-      clientId: 87f8fe68-be40-430d-9d42-4e6ae448bb4f
+      clientId: 87f48bb4f
       clientSecret:
         valueFrom:
           secretKeyRef:
             name: keda-servicebus-clientid
             key: clientid                                 
-      tenantId: 8a94ab74-f3c6-4d02-89c7-ed0f47d6c544
+      tenantId: 8a9447d6c544
     secrets:
     - parameter: connection
       name: fog-api-service-bus #secret name as configured in azure key vault
-      version: 2d04414396674baba71fbec21a1010f9 #version to use within secret name in azure key vault
+      version: 2d0010f9 #version to use within secret name in azure key vault
      
 ---
 apiVersion: keda.sh/v1alpha1
