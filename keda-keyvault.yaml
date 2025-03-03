@@ -34,7 +34,7 @@ kind: Secret
 metadata:
   name: keda-servicebus-clientid
 data:  
-  clientid: $clientid #AAD clientId secret in base64 mode
+  clientid: clientid #AAD clientId secret in base64 mode
  
 ---
 apiVersion: keda.sh/v1alpha1
@@ -43,19 +43,19 @@ metadata:
   name: keyvault-auth
 spec:
   azureKeyVault:
-    vaultUri: https://$cluster.vault.azure.net/
+    vaultUri: https://cluster_name.vault.azure.net/
     credentials:
-      clientId: 87f48bb4f
+      clientId: clientId
       clientSecret:
         valueFrom:
           secretKeyRef:
             name: keda-servicebus-clientid
             key: clientid                                 
-      tenantId: $tenantId
+      tenantId: tenantId
     secrets:
     - parameter: connection
       name: fog-api-service-bus #secret name as configured in azure key vault
-      version: $version #version to use within secret name in azure key vault
+      version: version #version to use within secret name in azure key vault
      
 ---
 apiVersion: keda.sh/v1alpha1
